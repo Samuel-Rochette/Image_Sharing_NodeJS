@@ -6,15 +6,22 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const passport = require("passport");
+const fileUpload = require("express-fileupload");
+const logger = require("morgan");
 
 const rtsIndex = require("./routes/index.router");
+const rtsImage = require("./routes/image.router");
 
 var app = express();
 
 app.use(bodyParser.json());
 app.use(cors());
 app.use(passport.initialize());
+app.use(fileUpload());
+app.use(logger("dev"));
+
 app.use("/api", rtsIndex);
+app.use("/image", rtsImage);
 
 app.use((err, req, res, next) => {
   if (err.name === "ValidationError") {

@@ -3,9 +3,10 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 var userSchema = new mongoose.Schema({
-  name: {
+  username: {
     type: String,
-    required: "name required"
+    required: "username required",
+    unique: true
   },
   email: {
     type: String,
@@ -19,7 +20,8 @@ var userSchema = new mongoose.Schema({
   },
   saltSecret: {
     type: String
-  }
+  },
+  favorites: [String]
 });
 
 userSchema.path("email").validate(val => {
@@ -47,4 +49,4 @@ userSchema.methods.generateJwt = function() {
   });
 };
 
-mongoose.model("StoreUser", userSchema);
+mongoose.model("User", userSchema);

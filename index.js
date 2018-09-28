@@ -1,6 +1,6 @@
 require("./config/config");
 require("./models/db");
-require("./config/passportConfig");
+require("./services/passport.service");
 
 const express = require("express");
 const bodyParser = require("body-parser");

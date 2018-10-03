@@ -5,7 +5,7 @@ const _ = require("lodash");
 const User = mongoose.model("User");
 
 module.exports.register = (req, res, next) => {
-  var user = new User();
+  let user = new User();
   user.username = req.body.username;
   user.email = req.body.email;
   user.password = req.body.password;
@@ -29,7 +29,7 @@ module.exports.authenticate = (req, res, next) => {
 };
 
 module.exports.userProfile = (req, res, next) => {
-  User.findOne({ _id: req._id }, (err, user) => {
+  User.findById(req._id, (err, user) => {
     if (!user)
       return res
         .status(404)

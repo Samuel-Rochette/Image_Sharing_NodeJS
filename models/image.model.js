@@ -1,20 +1,17 @@
 const mongoose = require("mongoose");
+const mongoosePaginate = require("mongoose-paginate");
 
-const commentSchema = new mongoose.Schema({
-  author: {
+var commentSchema = require("./comment.model");
+
+var imageSchema = new mongoose.Schema({
+  name: {
     type: String,
-    required: "must be logged in to leave a comment"
+    required: "name required",
+    unique: true
   },
-  message: {
+  path: {
     type: String,
-    required: "cannot post blank comment"
-  }
-});
-
-const imageSchema = new mongoose.Schema({
-  filename: {
-    type: String,
-    required: "filename required",
+    required: "path required",
     unique: true
   },
   uploadedby: {
@@ -24,5 +21,6 @@ const imageSchema = new mongoose.Schema({
   description: String,
   comments: [commentSchema]
 });
+imageSchema.plugin(mongoosePaginate);
 
 mongoose.model("Image", imageSchema);

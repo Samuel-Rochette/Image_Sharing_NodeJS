@@ -21,7 +21,7 @@ var userSchema = new mongoose.Schema({
   saltSecret: {
     type: String
   },
-  favorites: [String]
+  favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: "Image" }]
 });
 
 userSchema.path("email").validate(val => {

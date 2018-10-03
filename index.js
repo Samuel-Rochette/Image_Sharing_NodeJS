@@ -19,6 +19,7 @@ app.use(cors());
 app.use(passport.initialize());
 app.use(fileUpload());
 app.use(logger("dev"));
+app.use(express.static("assets"));
 
 app.use("/api", rtsIndex);
 app.use("/image", rtsImage);

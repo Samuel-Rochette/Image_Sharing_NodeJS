@@ -50,7 +50,11 @@ module.exports.getAll = (req, res, next) => {
 module.exports.getPage = (req, res, next) => {
   Image.paginate({}, { page: req.params.pageNum, limit: 9 }, (err, images) => {
     if (!err) {
-      res.send(images);
+      if (req.params.pageNum > images.pages) {
+        res
+          .status(400)
+          .json({ status: false, message: "cannot GET non-existant page" });
+      } else res.send(images.docs);
     } else {
       next(err);
     }
@@ -58,13 +62,11 @@ module.exports.getPage = (req, res, next) => {
 };
 
 module.exports.getOne = (req, res, next) => {
-  Image.findById(req.params.imageId)
-    .populate("comments")
-    .exec((err, image) => {
-      if (!err) {
-        res.send(image);
-      } else next(err);
-    });
+  Image.findById(req.params.imageId, (err, image) => {
+    if (!err) {
+      res.send(image);
+    } else next(err);
+  });
 };
 
 module.exports.postComment = (req, res, next) => {
@@ -85,4 +87,63 @@ module.exports.postComment = (req, res, next) => {
       });
     } else next(err);
   });
+};
+
+module.exports.saveImage = (req, res, next) => {
+  Image.findById(req.body.imageId, (err, image) => {
+    if (!err) {
+      User.findById(req._id, (err, user) => {
+        if (!err) {
+          if (user.favorites.indexOf(image._id) == -1) {
+            user.favorites.push(image._id);
+            user.save((err, doc) => {
+              if (!err) {
+                res.send(doc);
+              } else next(err);
+            });
+          } else {
+            res.status(400).json({
+              status: false,
+              message: "cannot save duplicate of image"
+            });
+          }
+        } else next(err);
+      });
+    } else next(err);
+  });
+};
+
+module.exports.unsaveImage = (req, res, next) => {
+  Image.findById(req.body.imageId, (err, image) => {
+    if (!err) {
+      User.findById(req._id, (err, user) => {
+        if (!err) {
+          if (user.favorites.indexOf(image._id) != -1) {
+            let index = user.favorites.indexOf(image._id);
+            user.favorites.splice(user.favorites.indexOf(image._id), 1);
+            user.save((err, doc) => {
+              if (!err) {
+                res.send(doc);
+              } else next(err);
+            });
+          } else {
+            res.status(400).json({
+              status: false,
+              message: "deleting non-existant favorite"
+            });
+          }
+        } else next(err);
+      });
+    } else next(err);
+  });
+};
+
+module.exports.getFavorites = (req, res, next) => {
+  User.findById(req._id)
+    .populate("favorites")
+    .exec((err, user) => {
+      if (!err) {
+        res.send(user.favorites);
+      } else next(err);
+    });
 };

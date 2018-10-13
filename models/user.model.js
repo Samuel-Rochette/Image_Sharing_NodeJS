@@ -16,6 +16,7 @@ var userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: "password required",
+    unique: true,
     minlength: [4, "password must be at least 4 characters in length"]
   },
   saltSecret: {
